@@ -6,6 +6,7 @@ const fs = Promise.promisifyAll(require("fs"));
 const yaml = require("js-yaml");
 const jsc = require("jsverify");
 const tmp = require("tmp-promise");
+const _get = require("lodash.get");
 const _set = require("lodash.set");
 
 /**
@@ -41,22 +42,25 @@ describe("YAMLEditor.get", function() {
   describe("reading keys from a written file", function() {
     let tested = 0;
     let needed = 40;
-    let fails = { parentObj: 0, badData: 0, badPath: 0, yamlFail: 0, badYAML: 0};
+    let fails = { parentObj: 0, badData: 0, yamlFail: 0, badYAML: 0};
 
     this.timeout(10 * 1000);
 
     jsc.property("should return the written key",
       jsc.constant({}), //jsc.json
-      jsc.nearray(jsc.oneof(jsc.number, alphaNumericString())),
-      jsc.oneof(jsc.number, jsc.string, jsc.constant(simpleArray)), // jsc.json
+      jsc.nearray(jsc.oneof(jsc.nat, alphaNumericString())),
+      jsc.oneof(jsc.number, alphaNumericString(), jsc.constant(simpleArray)), // jsc.json
       function(obj, path, data) {
         obj = Object.create(obj);
         if(!obj || typeof obj !== "object" || Array.isArray(obj)) { ++fails.parentObj; return true; }
         if(!data) { ++fails.badData; return true; }
-        path = path.filter(str => str && (""+str).length > 0);
-        if(path.length < 1) { ++fails.badPath; return true; }
+        if(typeof path[0] === "number") { path = ["foobar", ...path]; }
+        // _set({}, ["a", 12], 1) will create an array with 12 undefined entries, which get collapsed in YAML.
+        // To prevent this, prefix all numbers with digits.  However, this does prevent arrays from being tested.
+        path = path.map(i => "a"+i);
         let tmpFile = null;
         _set(obj, path, data);
+        data.should.deep.equal(_get(obj, path), "Data should be inserted into the object");
         let yamlString = null;
         try {
           yamlString = yaml.safeDump(obj, { skipInvalid: true });
@@ -65,13 +69,14 @@ describe("YAMLEditor.get", function() {
           ++fails.yamlFail;
           return true;
         }
+        data.should.deep.equal(_get(yaml.safeLoad(yamlString), path), "The created YAML should be parseable.");
         ++tested;
         return Promise
           .resolve(tmp.file())
           .then(o => tmpFile = o)
           .then(() => fs.writeFileAsync(tmpFile.path, yamlString))
           .then(() => YAMLEditor.get(tmpFile.path, path))
-          .then(val => data.should.deep.equal(val, "Value read from file should match data inserted."))
+          .then(val => data.should.deep.equal(val, "Value read from file should match data inserted"))
           .finally(() => tmpFile.cleanup())
           .then(() => true);
       }
@@ -82,7 +87,6 @@ describe("YAMLEditor.get", function() {
         console.log(`Failures:
           ${fails.parentObj}  Invalid parent object
           ${fails.badData}  Invalid inserted data
-          ${fails.badPath}  Bad path
           ${fails.yamlFail}  YAML stringify failed
           ${fails.badYAML}  YAML stringify returned bad data`);
       }
