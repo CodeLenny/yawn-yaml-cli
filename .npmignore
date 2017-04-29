@@ -1,0 +1,5 @@
+# YAWN.js, which is included in `.gitignore`, will be included in the package.
+
+YAWN-import.js
+test/
+.gitignore

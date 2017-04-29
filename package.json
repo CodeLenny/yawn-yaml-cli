@@ -2,8 +2,9 @@
   "name": "yawn-yaml-cli",
   "version": "0.0.0",
   "description": "A command-line YAML editor that preserves comments and styling.",
-  "main": "index.js",
+  "main": "YAMLEditor.js",
   "scripts": {
+    "prep": "$(npm bin)/rollup --format cjs YAWN-import.js > YAWN.js",
     "test": "mocha"
   },
   "repository": {
@@ -18,6 +19,16 @@
   "homepage": "https://github.com/CodeLenny/yawn-yaml-cli#readme",
   "devDependencies": {
     "chai": "^3.5.0",
-    "mocha": "^3.3.0"
+    "js-yaml": "^3.8.3",
+    "jsverify": "^0.8.2",
+    "mocha": "^3.3.0",
+    "rollup": "^0.41.6",
+    "tmp-promise": "^1.0.3"
+  },
+  "dependencies": {
+    "bluebird": "^3.5.0",
+    "lodash.get": "^4.4.2",
+    "lodash.set": "^4.3.2",
+    "yawn-yaml": "^1.2.1"
   }
 }
