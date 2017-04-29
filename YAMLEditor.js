@@ -176,9 +176,32 @@ class YAMLEditor {
           contents.json = null;
           contents.json = val;
         }
-      })
-      .then(() => this.save(file, contents.yaml, true));
+        return this.save(file, contents.yaml, true);
+      });
   }
+
+  /**
+   * Add a value to an array in a YAML file.
+   * If an array with the given path doesn't exist, an empty array will be created.
+   * @param {String} file the path to a YAML file.  Given to `fs.readFile`.
+   * @param {String} path the path to an array inside the YAML file.  Uses `lodash.get`/`lodash.set` syntax.
+   * @param {Any} val the value to insert into the specified array.
+   * @return {Promise} resolves when the value has been inserted.
+  */
+  static push(file, path, val) {
+    let contents = null;
+    return this.load(file)
+      .then(loaded => contents = loaded)
+      .then(() => {
+        let json = contents.json;
+        let array = get(json, path);
+        if(array === undefined) { array = []; set(json, path, array); }
+        array.push(val);
+        contents.json = json;
+        return this.save(file, contents.yaml, true);
+      });
+  }
+
 }
 
 module.exports = YAMLEditor;
