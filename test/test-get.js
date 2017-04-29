@@ -50,6 +50,7 @@ describe("YAMLEditor.get", function() {
       jsc.nearray(jsc.oneof(jsc.number, alphaNumericString())),
       jsc.oneof(jsc.number, jsc.string, jsc.constant(simpleArray)), // jsc.json
       function(obj, path, data) {
+        obj = Object.create(obj);
         if(!obj || typeof obj !== "object" || Array.isArray(obj)) { ++fails.parentObj; return true; }
         if(!data) { ++fails.badData; return true; }
         path = path.filter(str => str && (""+str).length > 0);
@@ -70,7 +71,7 @@ describe("YAMLEditor.get", function() {
           .then(o => tmpFile = o)
           .then(() => fs.writeFileAsync(tmpFile.path, yamlString))
           .then(() => YAMLEditor.get(tmpFile.path, path))
-          .then(val => val.should.deep.equal(data, "Value read from file should match data inserted."))
+          .then(val => data.should.deep.equal(val, "Value read from file should match data inserted."))
           .finally(() => tmpFile.cleanup())
           .then(() => true);
       }
