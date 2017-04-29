@@ -3,6 +3,9 @@
   "version": "0.0.0",
   "description": "A command-line YAML editor that preserves comments and styling.",
   "main": "YAMLEditor.js",
+  "bin": {
+    "yawn": "bin/cli.js"
+  },
   "scripts": {
     "prep": "$(npm bin)/rollup --format cjs YAWN-import.js > YAWN.js",
     "docs": "jsdoc -c jsdoc.json",
@@ -22,7 +25,6 @@
     "chai": "^3.5.0",
     "defer-promise": "^1.0.1",
     "docdash": "^0.4.0",
-    "js-yaml": "^3.8.3",
     "jsdoc": "^3.4.3",
     "jsverify": "^0.8.2",
     "mocha": "^3.3.0",
@@ -31,6 +33,8 @@
   },
   "dependencies": {
     "bluebird": "^3.5.0",
+    "commander": "^2.9.0",
+    "js-yaml": "^3.8.3",
     "lodash.get": "^4.4.2",
     "lodash.set": "^4.3.2",
     "yawn-yaml": "^1.2.1"
