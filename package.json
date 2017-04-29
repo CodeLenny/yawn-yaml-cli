@@ -1,0 +1,23 @@
+{
+  "name": "yawn-yaml-cli",
+  "version": "0.0.0",
+  "description": "A command-line YAML editor that preserves comments and styling.",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CodeLenny/yawn-yaml-cli.git"
+  },
+  "author": "Ryan Leonard (http://ryanleonard.us)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/CodeLenny/yawn-yaml-cli/issues"
+  },
+  "homepage": "https://github.com/CodeLenny/yawn-yaml-cli#readme",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^3.3.0"
+  }
+}
