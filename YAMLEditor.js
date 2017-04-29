@@ -15,6 +15,9 @@ function staticSetBoolean(_this, name, val) {
   _this[`_${name}`] = val;
 }
 
+/**
+ * Reads and modifies YAML files preserving comments and styling.
+*/
 class YAMLEditor {
 
   /**

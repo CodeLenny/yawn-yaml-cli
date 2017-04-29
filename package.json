@@ -5,6 +5,7 @@
   "main": "YAMLEditor.js",
   "scripts": {
     "prep": "$(npm bin)/rollup --format cjs YAWN-import.js > YAWN.js",
+    "docs": "jsdoc -c jsdoc.json",
     "test": "mocha"
   },
   "repository": {
@@ -19,7 +20,9 @@
   "homepage": "https://github.com/CodeLenny/yawn-yaml-cli#readme",
   "devDependencies": {
     "chai": "^3.5.0",
+    "docdash": "^0.4.0",
     "js-yaml": "^3.8.3",
+    "jsdoc": "^3.4.3",
     "jsverify": "^0.8.2",
     "mocha": "^3.3.0",
     "rollup": "^0.41.6",
