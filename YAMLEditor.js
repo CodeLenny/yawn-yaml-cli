@@ -146,7 +146,7 @@ class YAMLEditor {
   */
   static get(file, path) {
     return this.load(file)
-      .then(loaded => get(loaded.json, path))
+      .then(loaded => path ? get(loaded.json, path) : loaded.json)
       .then(val => {
         if(val === undefined && this.referenceFatal) {
           throw new ReferenceError("YAML file " + file + " doens't include" + path + ".");
