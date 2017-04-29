@@ -20,6 +20,7 @@
   "homepage": "https://github.com/CodeLenny/yawn-yaml-cli#readme",
   "devDependencies": {
     "chai": "^3.5.0",
+    "defer-promise": "^1.0.1",
     "docdash": "^0.4.0",
     "js-yaml": "^3.8.3",
     "jsdoc": "^3.4.3",
