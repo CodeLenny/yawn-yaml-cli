@@ -1,4 +1,5 @@
 const Promise = require("bluebird");
+Promise.defer = require("defer-promise");
 const fs = Promise.promisifyAll(require("fs"));
 const YAWN = require("./YAWN");
 const get = require("lodash.get");
@@ -21,7 +22,9 @@ function staticSetBoolean(_this, name, val) {
 class YAMLEditor {
 
   /**
-   * If `true`, file reads will be cached.  Defaults to `true`.
+   * If `true`, file reads will be cached.
+   * Required to be `true` if a file is changed multiple times simultaneously.
+   * Defaults to `true`.
    * @type {boolean}
   */
   static get cache() { return staticGetDefault(this, "cache", true); }
@@ -30,8 +33,19 @@ class YAMLEditor {
 
   /**
    * If `true`, referencing an undefined path in a file will throw a {@link ReferenceError}.
+   * If `false`, referencing an undefined path will return `undefined` (the default for `lodash.get`).
    * Defaults to `false`.
    * @type {boolean}
+   * @example <caption>With `referenceFatal=true`</caption>
+   * require("fs").writeFileSync("test.yaml", "");
+   * let username = "bob";
+   * YAMLEditor.get("test.yaml", `users.${username}.name`)
+   *   .catch(ReferenceError, => { console.log(`${username}` not found.)});
+   * @example <caption>With `referenceFatal=false` (default)</caption>
+   * require("fs").writeFileSync("test.yaml", "");
+   * let username = "bob";
+   * YAMLEditor.get("test.yaml", `users.${username}.name`)
+   *   .then(name => console.log("Bob's name is " + name)); // => "Bob's name is undefined"
   */
   static get referenceFatal() { return staticGetDefault(this, "referenceFatal", false); }
 
@@ -41,6 +55,18 @@ class YAMLEditor {
    * If `true`, the YAML file will be saved whenever the contents have been altered.
    * Otherwise, {@link YAMLEditor.save} needs to be called after all changes have been made.
    * @type {boolean}
+   * @example <caption>With `autosave=true` (default)</caption>
+   * YAMLEditor.set("test.yaml", "newkey", "newvalue").then(() => console.log("Updated test.yaml"))
+   * @example <caption>With `autosave=false`</caption>
+   * YAMLEditor.autosave = false;
+   * YAMLEditor.cache = true; // cache is required if file is being changed simultaneously.
+   * Promise.all([
+   *   YAMLEditor.set("test.yaml", "key1", "foo"),
+   *   YAMLEditor.set("test.yaml", "key2", "bar"),
+   * ]).then(=> {
+   *   // `test.yaml` hasn't been changed on the file system yet.  Changes have been saved inside YAMLEditor's cache.
+   *   YAMLEditor.save("test.yaml");
+   * }).then(() => console.log("Updated test.yaml"));
   */
   static get autosave() { return staticGetDefault(this, "autosave", true); }
 
@@ -67,36 +93,49 @@ class YAMLEditor {
   */
   static load(file) {
     if(this.cache && this._cached && this._cached[file]) {
-      return this._cached[file];
+      return this._cached[file].promise;
+    }
+    if(this.cache) {
+      if(!this._cached) { this._cached = {}; }
+      this._cached[file] = Promise.defer();
     }
     return fs.readFileAsync(file, "utf8")
       .then(yaml => new YAWN(yaml))
       .catch(err => {
-        if(this.defaultFile !== null) {
-          return this.defaultFile;
-        }
+        if(this.defaultFile !== null) { return this.defaultFile; }
         throw err;
       })
       .then(obj => {
-        if(this.cache) {
-          if(!this._cached) { this._cached = {}; }
-          this._cached[file] = obj;
-        }
+        if(this.cache) { this._cached[file].resolve(obj); }
         return obj;
+      })
+      .catch(err => {
+        if(this.cache) { this._cached[file].reject(err); }
+        throw err;
       });
   }
 
   /**
    * Save the given file using YAWN.
    * @param {String} path the path to the YAML file.  Given to `fs.writeFile`.
-   * @param {String} yaml the YAML contents as a string.
+   * @param {String} yaml the YAML contents as a string.  If not provided, YAMLEditor's internal cache will be tried.
    * @param {Boolean} automatic Flag to determine if `save` is being explicitly, or being called to autosave the file
    *   after making a change.  Internal methods should set the flag to `true`.  Otherwise, the flag defaults to `false`.
    * @return {Promise} resolves when the file has been saved.
   */
   static save(path, yaml, automatic) {
     if(automatic && !this.autosave) { return Promise.resolve(); }
-    return fs.writeFileAsync(path, yaml);
+    if(!yaml && this._cached && this._cached[path] && this._cached[path].promise) {
+      yaml = this._cached[path].promise.then(yawn => yawn.yaml);
+    }
+    if(!yaml) {
+      return Promise.reject(
+        new ReferenceError("No contents given to YAMLEditor.save for file "+path+", and the file isn't cached.")
+      );
+    }
+    return Promise
+      .resolve(yaml)
+      .then(str => fs.writeFileAsync(path, str));
   }
 
   /**
