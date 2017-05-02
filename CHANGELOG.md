@@ -2,9 +2,9 @@
 
 ## Unreleased
 
-### Modified
-
 ## 0.1.1 - 2017-05-02
+
+### Modified
 
 - Added `defer-promise` as a `dependency` (not `devDependency`)
 
