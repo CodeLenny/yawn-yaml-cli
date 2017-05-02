@@ -1,5 +1,8 @@
 # YAWN YAML CLI
 
+[![npm](https://img.shields.io/npm/v/yawn-yaml-cli.svg)](https://www.npmjs.com/package/yawn-yaml-cli)
+[![Build Status](https://travis-ci.org/CodeLenny/yawn-yaml-cli.svg?branch=master)](https://travis-ci.org/CodeLenny/yawn-yaml-cli)
+
 A command-line YAML editor that preserves comments and styling.
 
 Based on the Node.js package [YAWN YAML](https://github.com/mohsen1/yawn-yaml).
