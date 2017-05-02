@@ -23,7 +23,6 @@
   "homepage": "https://github.com/CodeLenny/yawn-yaml-cli#readme",
   "devDependencies": {
     "chai": "^3.5.0",
-    "defer-promise": "^1.0.1",
     "docdash": "^0.4.0",
     "jsdoc": "^3.4.3",
     "jsverify": "^0.8.2",
@@ -34,6 +33,7 @@
   "dependencies": {
     "bluebird": "^3.5.0",
     "commander": "^2.9.0",
+    "defer-promise": "^1.0.1",
     "js-yaml": "^3.8.3",
     "lodash.get": "^4.4.2",
     "lodash.set": "^4.3.2",
