@@ -13,7 +13,7 @@ describe("YAMLEditor.load() then YAMLEditor.save()", function() {
   let yamlString = null;
 
   beforeEach(function() {
-    yamlString = yaml.safeDump({
+    yamlString = yaml.dump({
       foo: { bar: { baz: 1 } },
       test: "asdf",
     });
@@ -36,7 +36,7 @@ describe("YAMLEditor.load() then YAMLEditor.save()", function() {
         return YAMLEditor.save(tmpFile.path, yawn.yaml);
       })
       .then(() => fs.readFileAsync(tmpFile.path, "utf8"))
-      .then(yaml.safeLoad)
+      .then(yaml.load)
       .then(obj => {
         obj.should.have.property("foo");
         obj.foo.bar.should.have.property("baz2", 2, "Changed value should be set in file");

@@ -13,7 +13,7 @@ describe("YAMLEditor.push()", function() {
   let yamlString = null;
 
   beforeEach(function() {
-    yamlString = yaml.safeDump({
+    yamlString = yaml.dump({
       list: ["a", "b"],
     });
     return tmp.file()
@@ -29,7 +29,7 @@ describe("YAMLEditor.push()", function() {
     return YAMLEditor
       .push(tmpFile.path, "list", "c")
       .then(() => fs.readFileAsync(tmpFile.path, "utf8"))
-      .then(yaml.safeLoad)
+      .then(yaml.load)
       .then(obj => {
         obj.should.have.property("list");
         obj.list.should.be.an.array;
@@ -42,7 +42,7 @@ describe("YAMLEditor.push()", function() {
     return YAMLEditor
       .push(tmpFile.path, "list2", "1")
       .then(() => fs.readFileAsync(tmpFile.path, "utf8"))
-      .then(yaml.safeLoad)
+      .then(yaml.load)
       .then(obj => {
         obj.should.have.property("list");
         obj.should.have.property("list2");

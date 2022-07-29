@@ -1,7 +1,7 @@
 const Promise = require("bluebird");
 Promise.defer = require("defer-promise");
 const fs = Promise.promisifyAll(require("fs"));
-const YAWN = require("./YAWN");
+const YAWN = require("yawn-yaml/cjs");
 const get = require("lodash.get");
 const set = require("lodash.set");
 

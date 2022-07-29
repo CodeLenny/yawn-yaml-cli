@@ -17,7 +17,7 @@ describe("YAMLEditor.load", function() {
       if(!obj || typeof obj !== "object") { return true; }
       ++tested;
       let tmpFile = null;
-      let yamlString = yaml.safeDump(obj);
+      let yamlString = yaml.dump(obj);
       return Promise
         .resolve(tmp.file())
         .then(o => tmpFile = o)

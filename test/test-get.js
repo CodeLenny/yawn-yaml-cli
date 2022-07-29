@@ -63,13 +63,13 @@ describe("YAMLEditor.get", function() {
         data.should.deep.equal(_get(obj, path), "Data should be inserted into the object");
         let yamlString = null;
         try {
-          yamlString = yaml.safeDump(obj, { skipInvalid: true });
+          yamlString = yaml.dump(obj, { skipInvalid: true });
           if(!yamlString || yamlString.length < 1) { ++fails.badYAML; return true; }
         } catch (e) {
           ++fails.yamlFail;
           return true;
         }
-        data.should.deep.equal(_get(yaml.safeLoad(yamlString), path), "The created YAML should be parseable.");
+        data.should.deep.equal(_get(yaml.load(yamlString), path), "The created YAML should be parseable.");
         ++tested;
         return Promise
           .resolve(tmp.file())
