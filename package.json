@@ -1,6 +1,6 @@
 {
   "name": "yawn-yaml-cli",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A command-line YAML editor that preserves comments and styling.",
   "main": "YAMLEditor.js",
   "bin": {
@@ -24,7 +24,6 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "docdash": "^0.4.0",
-    "js-yaml": "^4.1.0",
     "jsdoc": "^3.4.3",
     "jsverify": "^0.8.2",
     "mocha": "^3.3.0",
@@ -34,6 +33,7 @@
     "bluebird": "^3.5.0",
     "commander": "^2.9.0",
     "defer-promise": "^1.0.1",
+    "js-yaml": "^4.1.0",
     "lodash.get": "^4.4.2",
     "lodash.set": "^4.3.2",
     "yawn-yaml": "^1.5.0"
